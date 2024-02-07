@@ -1,6 +1,6 @@
-                def dockerrun = 'docker run -p 8000:80 -itd --name compose 8875022556/CI-CD-using-Docker:latest'
+                def dockerrun = 'docker run -p 8000:80 -itd --name compose 8875022556/ci-cd-using-Docker:latest'
                 def dockerrm = 'docker container rm -f compose'
-               def dockerimagerm = 'docker rmi -f 8875022556/CI-CD-using-Docker'
+               def dockerimagerm = 'docker rmi -f 8875022556/ci-cd-using-Docker'
 pipeline {
     agent any
 
