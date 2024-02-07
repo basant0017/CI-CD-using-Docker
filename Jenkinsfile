@@ -3,7 +3,7 @@ pipeline {
     environment {
         dockerRun = "docker run -p 8000:80 -d --name cloudknowledges  8875022556//ci-cd-using-docker:latest"
         dockerrm = "docker container rm -f cloudknowledges"
-        dockerimagerm = "docker image rmi  8875022556//ci-cd-using-docker"
+        dockerimagerm = "docker rmi  8875022556//ci-cd-using-docker"
     }
         
 
@@ -16,9 +16,9 @@ pipeline {
         
         stage("Build") {
             steps {
-                sh 'docker image build -t $JOB_NAME:v1.$BUILD_ID .'
-                sh 'docker image tag $JOB_NAME:v1.$BUILD_ID sd171991/$JOB_NAME:v1.$BUILD_ID'
-                sh 'docker image tag $JOB_NAME:v1.$BUILD_ID sd171991/$JOB_NAME:latest'
+                sh 'docker  build -t $JOB_NAME:v1.$BUILD_ID .'
+                sh 'docker  tag $JOB_NAME:v1.$BUILD_ID sd171991/$JOB_NAME:v1.$BUILD_ID'
+                sh 'docker  tag $JOB_NAME:v1.$BUILD_ID sd171991/$JOB_NAME:latest'
                 
             }
         }
@@ -28,9 +28,9 @@ pipeline {
                 withCredentials([string(credentialsId: 'docker', variable: 'docker')]) {
     // some block
     sh 'docker login -u 8875022556 -p ${docker}'
-    sh 'docker image push 8875022556/$JOB_NAME:v1.$BUILD_ID'
-    sh 'docker image push 8875022556/$JOB_NAME:latest'
-    sh 'docker image rmi $JOB_NAME:v1.$BUILD_ID 8875022556/$JOB_NAME:v1.$BUILD_ID 8875022556/$JOB_NAME:latest'
+    sh 'docker  push 8875022556/$JOB_NAME:v1.$BUILD_ID'
+    sh 'docker  push 8875022556/$JOB_NAME:latest'
+    sh 'docker rmi $JOB_NAME:v1.$BUILD_ID 8875022556/$JOB_NAME:v1.$BUILD_ID 8875022556/$JOB_NAME:latest'
 }
             }
         }
