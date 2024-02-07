@@ -10,7 +10,8 @@ pipeline {
     stages {
         stage('PUll') {
             steps {
-                git 'https://github.com/basant0017/ci-cd-using-docker.git'
+           //     git 'https://github.com/basant0017/ci-cd-using-docker.git'
+                git branch: 'main', url: 'https://github.com/basant0017/ci-cd-using-docker.git'
             }
         }
         
