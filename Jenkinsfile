@@ -20,7 +20,8 @@ pipeline {
          //       sh 'docker  build -t $JOB_NAME:v1.$BUILD_ID .'
           //      sh 'docker  tag $JOB_NAME:v1.$BUILD_ID sd171991/$JOB_NAME:v1.$BUILD_ID'
           //      sh 'docker  tag $JOB_NAME:v1.$BUILD_ID sd171991/$JOB_NAME:latest'
-                 sh 'docker-compose build'
+                  sh 'docker-compose build'     
+                  echo 'docker-compose-build build image completed'
                 
             }
         }
