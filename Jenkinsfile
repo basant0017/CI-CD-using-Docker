@@ -1,61 +1,37 @@
+                def dockerrun = 'docker run -p 8000:80 -itd --name compose 8875022556/CI-CD-using-Docker:latest'
+                def dockerrm = 'docker container rm -f compose'
+               def dockerimagerm = 'docker rmi -f 8875022556/CI-CD-using-Docker'
 pipeline {
     agent any
-  //  	  tools
- //    {
-//       maven "Maven"
-//     }
- stages {
-      stage('checkout') {
-           steps {
-             
-                git branch: 'main', url: 'https://github.com/devops4solutions/CI-CD-using-Docker.git'
-             
-          }
-        }
-	// stage('Execute Maven') {
-      //     steps {
-             
-    //            sh 'mvn package'             
-    //      }
-   //     }
-        
 
-  stage('Docker Build and Tag') {
-           steps {
-              
-                sh 'docker build -t samplewebapp:latest .' 
-                sh 'docker tag samplewebapp nikhilnidhi/samplewebapp:latest'
-                //sh 'docker tag samplewebapp nikhilnidhi/samplewebapp:$BUILD_NUMBER'
-               
-          }
-        }
-     
-  stage('Publish image to Docker Hub') {
-          
+    stages {
+        stage('Build Dockerfile') {
             steps {
-        withCredentials([string(credentialsId: 'docker', variable: 'docker')]) {
-          sh  'docker push nikhilnidhi/samplewebapp:latest'
-        //  sh  'docker push nikhilnidhi/samplewebapp:$BUILD_NUMBER' 
-        }
-                  
-          }
-        }
-     
-      stage('Run Docker container on Jenkins Agent') {
-             
-            steps 
-			{
-                sh "docker run -d -p 8003:8080 nikhilnidhi/samplewebapp"
- 
+                  sh 'docker image build -t $JOB_NAME:v1.$BUILD_ID .'
+                  sh 'docker image tag $JOB_NAME:v1.$BUILD_ID 8875022556/$JOB_NAME:v1.$BUILD_ID' 
+                 sh 'docker image tag $JOB_NAME:v1.$BUILD_ID 8875022556/$JOB_NAME:latest'                        
             }
         }
- stage('Run Docker container on remote hosts') {
-             
-            steps {
-                sh "docker -H ssh://almalinux@15.235.147.96 run -d -p 8003:8080 nikhilnidhi/samplewebapp"
- 
+        stage('Push Image To Docker HUB'){
+            steps{
+            withCredentials([string(credentialsId: 'docker', variable: 'docker')]) {
+    // some block
+                sh 'docker login -u 8875022556 -p ${docker} '
+                sh 'docker image push 8875022556/$JOB_NAME:v1.$BUILD_ID'
+                sh 'docker image push 8875022556/$JOB_NAME:latest'
+                sh 'docker image rmi $JOB_NAME:v1.$BUILD_ID 8875022556/$JOB_NAME:v1.$BUILD_ID 8875022556/$JOB_NAME:latest '
+                  }
+                }
             }
+        stage('Deployment Of Docker Container'){
+            steps{
+                sshagent(['ssh-agent']) {
+    // some block
+                   sh "ssh -o StrictHostKeyChecking=no almalinux@15.235.147.96 ${dockerrm}" 
+                   sh "ssh -o StrictHostKeyChecking=no almalinux@15.235.147.96 ${dockerimagerm}"
+                   sh "ssh -o StrictHostKeyChecking=no almalinux@15.235.147.96 ${dockerrun}"    
+}
+                }
         }
+      }
     }
-	}
-    
