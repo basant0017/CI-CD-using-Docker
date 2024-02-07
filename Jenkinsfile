@@ -1,41 +1,50 @@
-         //       def dockerrun = 'docker run -p 8000:80 -itd --name compose 8875022556/ci-cd-using-docker:latest'
-         //       def dockerrm = 'docker container rm -f compose'
-        //       def dockerimagerm = 'docker rmi -f 8875022556/ci-cd-using-docker'
-                 def dockerrun =  'docker run -itd -p 8003:8080 nikhilnidhi/samplewebapp'
 pipeline {
     agent any
+    environment {
+        dockerRun = "docker run -p 8000:80 -d --name cloudknowledges  8875022556//ci-cd-using-docker:latest"
+        dockerrm = "docker container rm -f cloudknowledges"
+        dockerimagerm = "docker image rmi  8875022556//ci-cd-using-docker"
+    }
+        
 
     stages {
-        stage('Build Dockerfile') {
+        stage('PUll') {
             steps {
-            //      sh 'docker image build -t $JOB_NAME:v1.$BUILD_ID .'
-             //     sh 'docker image tag $JOB_NAME:v1.$BUILD_ID 8875022556/$JOB_NAME:v1.$BUILD_ID' 
-             //    sh 'docker image tag $JOB_NAME:v1.$BUILD_ID 8875022556/$JOB_NAME:latest' 
-                   sh 'docker build -t samplewebapp:latest .' 
-                   sh 'docker tag samplewebapp nikhilnidhi/samplewebapp:latest'                       
+                git 'https://github.com/basant0017/ci-cd-using-docker.git'
             }
         }
-        stage('Push Image To Docker HUB'){
-            steps{
-            withCredentials([string(credentialsId: 'docker', variable: 'docker')]) {
-    // some block
-                  sh 'docker login -u 8875022556 -p ${docker} '
-             //   sh 'docker image push 8875022556/$JOB_NAME:v1.$BUILD_ID'
-             //   sh 'docker image push 8875022556/$JOB_NAME:latest'
-             //   sh 'docker image rmi $JOB_NAME:v1.$BUILD_ID 8875022556/$JOB_NAME:v1.$BUILD_ID 8875022556/$JOB_NAME:latest '
-                  sh  'docker push nikhilnidhi/samplewebapp:latest'
-                  }
-                }
+        
+        stage("Build") {
+            steps {
+                sh 'docker image build -t $JOB_NAME:v1.$BUILD_ID .'
+                sh 'docker image tag $JOB_NAME:v1.$BUILD_ID sd171991/$JOB_NAME:v1.$BUILD_ID'
+                sh 'docker image tag $JOB_NAME:v1.$BUILD_ID sd171991/$JOB_NAME:latest'
+                
             }
-        stage('Deployment Of Docker Container'){
-            steps{
-                sshagent(['ssh-agent']) {
+        }
+        
+        stage("Push") {
+            steps {
+                withCredentials([string(credentialsId: 'docker', variable: 'docker')]) {
     // some block
-             //      sh "ssh -o StrictHostKeyChecking=no almalinux@15.235.147.96 ${dockerrm}" 
-             //      sh "ssh -o StrictHostKeyChecking=no almalinux@15.235.147.96 ${dockerimagerm}"
-                   sh "ssh -o StrictHostKeyChecking=no almalinux@15.235.147.96 ${dockerrun}"    
+    sh 'docker login -u 8875022556 -p ${docker}'
+    sh 'docker image push 8875022556/$JOB_NAME:v1.$BUILD_ID'
+    sh 'docker image push 8875022556/$JOB_NAME:latest'
+    sh 'docker image rmi $JOB_NAME:v1.$BUILD_ID 8875022556/$JOB_NAME:v1.$BUILD_ID 8875022556/$JOB_NAME:latest'
 }
-                }
+            }
         }
-      }
+        
+        stage("Deployment") {
+            steps {
+             sshagent(['ssh-agent']) {
+    // some block           
+   
+                 
+                 sh "ssh -o StricHostKeyChecking=no almalinux@15.235.147.96  ${env.dockerRun}"
+    
+}
+        }
+        }
     }
+}
