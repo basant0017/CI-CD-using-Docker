@@ -1,9 +1,9 @@
 pipeline {
     agent any
     	  tools
-     {
-       maven "Maven"
-     }
+ //    {
+//       maven "Maven"
+//     }
  stages {
       stage('checkout') {
            steps {
@@ -12,12 +12,12 @@ pipeline {
              
           }
         }
-	 stage('Execute Maven') {
-           steps {
+	// stage('Execute Maven') {
+      //     steps {
              
-                sh 'mvn package'             
-          }
-        }
+    //            sh 'mvn package'             
+    //      }
+   //     }
         
 
   stage('Docker Build and Tag') {
