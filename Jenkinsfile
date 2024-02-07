@@ -17,9 +17,10 @@ pipeline {
         
         stage("Build") {
             steps {
-                sh 'docker  build -t $JOB_NAME:v1.$BUILD_ID .'
-                sh 'docker  tag $JOB_NAME:v1.$BUILD_ID sd171991/$JOB_NAME:v1.$BUILD_ID'
-                sh 'docker  tag $JOB_NAME:v1.$BUILD_ID sd171991/$JOB_NAME:latest'
+         //       sh 'docker  build -t $JOB_NAME:v1.$BUILD_ID .'
+          //      sh 'docker  tag $JOB_NAME:v1.$BUILD_ID sd171991/$JOB_NAME:v1.$BUILD_ID'
+          //      sh 'docker  tag $JOB_NAME:v1.$BUILD_ID sd171991/$JOB_NAME:latest'
+                 sh ‘docker-compose –f build-compose.yml run –rm compile’
                 
             }
         }
